@@ -1,6 +1,6 @@
 
 export const firebaseConfig = {
-    apiKey: "AIzaSySUA_CHAVE_REAL_AQUI",
+    apiKey: "AIzaSyDyGXJ1b4QCEbxmMVHdgwoRirgGXtMeAk8",
     authDomain: "emprestimos-1e52e.firebaseapp.com",
     databaseURL: "https://emprestimos-1e52e-default-rtdb.firebaseio.com",
     projectId: "emprestimos-1e52e",
