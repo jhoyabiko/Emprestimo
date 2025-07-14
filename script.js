@@ -1,19 +1,49 @@
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, push, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getDatabase(app);
 
+const btnLogin = document.getElementById("btnLogin");
+const btnLogout = document.getElementById("btnLogout");
 const btnCadastrar = document.getElementById("btnAdicionar");
 const nomeInput = document.getElementById("nome");
 const listaClientes = document.getElementById("listaClientes");
+
+const loginDiv = document.getElementById("loginDiv");
+const appDiv = document.getElementById("appDiv");
+
+btnLogin.addEventListener("click", () => {
+  const email = document.getElementById("email").value;
+  const senha = document.getElementById("senha").value;
+  signInWithEmailAndPassword(auth, email, senha)
+    .catch(error => alert("Erro ao logar: " + error.message));
+});
+
+btnLogout.addEventListener("click", () => {
+  signOut(auth);
+});
 
 btnCadastrar.addEventListener("click", async () => {
   const nome = nomeInput.value.trim();
   if (nome) {
     await push(ref(db, "clientes"), { nome });
     nomeInput.value = "";
+  }
+});
+
+onAuthStateChanged(auth, user => {
+  if (user) {
+    loginDiv.style.display = "none";
+    appDiv.style.display = "block";
+    carregarClientes();
+  } else {
+    loginDiv.style.display = "block";
+    appDiv.style.display = "none";
   }
 });
 
@@ -41,35 +71,37 @@ function calcularSaldoComPagamentos(valorInicial, dataInicial, pagamentos = [], 
   return saldo;
 }
 
-onValue(ref(db, "clientes"), async snapshot => {
-  listaClientes.innerHTML = "";
-  const clientes = snapshot.val();
-  if (!clientes) return;
+function carregarClientes() {
+  onValue(ref(db, "clientes"), async snapshot => {
+    listaClientes.innerHTML = "";
+    const clientes = snapshot.val();
+    if (!clientes) return;
 
-  for (const [id, cliente] of Object.entries(clientes)) {
-    const emprestimosRef = ref(db, `clientes/${id}/emprestimos`);
-    const emprestimosSnap = await get(emprestimosRef);
-    const emprestimos = emprestimosSnap.val();
+    for (const [id, cliente] of Object.entries(clientes)) {
+      const emprestimosRef = ref(db, `clientes/${id}/emprestimos`);
+      const emprestimosSnap = await get(emprestimosRef);
+      const emprestimos = emprestimosSnap.val();
 
-    let totalSaldo = 0;
-    if (emprestimos) {
-      for (const [idEmp, emp] of Object.entries(emprestimos)) {
-        const pagamentosSnap = await get(child(emprestimosRef, `${idEmp}/pagamentos`));
-        const pagamentos = pagamentosSnap.exists() ? Object.values(pagamentosSnap.val()) : [];
-        totalSaldo += calcularSaldoComPagamentos(emp.valor, emp.data, pagamentos);
+      let totalSaldo = 0;
+      if (emprestimos) {
+        for (const [idEmp, emp] of Object.entries(emprestimos)) {
+          const pagamentosSnap = await get(child(emprestimosRef, `${idEmp}/pagamentos`));
+          const pagamentos = pagamentosSnap.exists() ? Object.values(pagamentosSnap.val()) : [];
+          totalSaldo += calcularSaldoComPagamentos(emp.valor, emp.data, pagamentos);
+        }
       }
-    }
 
-    const li = document.createElement("li");
-    li.innerHTML = `
-      <a href="cliente.html?id=${id}">
-        <strong>${cliente.nome}</strong> - R$ ${totalSaldo.toFixed(2)}
-      </a>
-      <div class="acoes-cliente">
-        <a href="emprestimo.html?id=${id}" class="button-link">Novo Empréstimo</a>
-        <a href="pagamento.html?id=${id}" class="button-link">Pagamento</a>
-      </div>
-    `;
-    listaClientes.appendChild(li);
-  }
-});
+      const li = document.createElement("li");
+      li.innerHTML = `
+        <a href="cliente.html?id=${id}">
+          <strong>${cliente.nome}</strong> - R$ ${totalSaldo.toFixed(2)}
+        </a>
+        <div class="acoes-cliente">
+          <a href="emprestimo.html?id=${id}" class="button-link">Novo Empréstimo</a>
+          <a href="pagamento.html?id=${id}" class="button-link">Pagamento</a>
+        </div>
+      `;
+      listaClientes.appendChild(li);
+    }
+  });
+}
