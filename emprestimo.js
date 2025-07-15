@@ -56,7 +56,7 @@ async function carregarEmprestimos() {
 
   for (const [idEmp, emp] of Object.entries(cliente.emprestimos)) {
     const li = document.createElement("li");
-    li.innerHTML = `
+    li.innerHTML = `<div class="card-cliente">
       Valor: R$ ${parseFloat(emp.valor).toFixed(2)}<br>
       Data: ${emp.data}
     `;

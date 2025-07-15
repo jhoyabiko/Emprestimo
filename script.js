@@ -104,14 +104,87 @@ function carregarClientes() {
       const li = document.createElement("li");
       li.innerHTML = `
         <a href="cliente.html?id=${id}">
-          <strong>${cliente.nome}</strong> - R$ ${totalSaldo.toFixed(2)}
+          ${cliente.nome} - R$ ${totalSaldo.toFixed(2)}
         </a>
-        <div class="acoes-cliente">
-          <a href="emprestimo.html?id=${id}" class="button-link">Novo Empréstimo</a>
-          <a href="pagamento.html?id=${id}" class="button-link">Pagamento</a>
-        </div>
+        
       `;
+      adicionarEventosContextuais(li, id, cliente.nome);
       listaClientes.appendChild(li);
     }
   });
+}
+
+let longPressTimer;
+let menuContextual;
+let clienteSelecionadoId = null;
+let clienteSelecionadoNome = null;
+
+function criarMenuContextual() {
+  menuContextual = document.createElement("div");
+  menuContextual.style.position = "absolute";
+  menuContextual.style.background = "white";
+  menuContextual.style.border = "1px solid #ccc";
+  menuContextual.style.borderRadius = "6px";
+  menuContextual.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
+  menuContextual.style.padding = "8px";
+  menuContextual.style.zIndex = 9999;
+  menuContextual.style.display = "none";
+
+  const btnEditar = document.createElement("button");
+  btnEditar.textContent = "✏️ Editar";
+  btnEditar.style.display = "block";
+  btnEditar.onclick = () => {
+    const novoNome = prompt("Novo nome do cliente:", clienteSelecionadoNome);
+    if (novoNome) {
+      const clienteRef = ref(db, `clientes/${clienteSelecionadoId}`);
+      clienteRef.update ? clienteRef.update({ nome: novoNome }) : alert("Erro: método update indisponível.");
+    }
+    menuContextual.style.display = "none";
+  };
+
+  const btnExcluir = document.createElement("button");
+  btnExcluir.textContent = "🗑️ Excluir";
+  btnExcluir.style.display = "block";
+  btnExcluir.style.marginTop = "6px";
+  btnExcluir.onclick = async () => {
+    if (confirm(`Excluir cliente "${clienteSelecionadoNome}"?`)) {
+      await ref(db, `clientes/${clienteSelecionadoId}`).remove();
+    }
+    menuContextual.style.display = "none";
+  };
+
+  menuContextual.appendChild(btnEditar);
+  menuContextual.appendChild(btnExcluir);
+  document.body.appendChild(menuContextual);
+}
+criarMenuContextual();
+
+document.addEventListener("click", () => {
+  menuContextual.style.display = "none";
+});
+
+function adicionarEventosContextuais(li, id, nome) {
+  li.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+    clienteSelecionadoId = id;
+    clienteSelecionadoNome = nome;
+    mostrarMenuContextual(e.pageX, e.pageY);
+  });
+
+  li.addEventListener("touchstart", (e) => {
+    longPressTimer = setTimeout(() => {
+      clienteSelecionadoId = id;
+      clienteSelecionadoNome = nome;
+      mostrarMenuContextual(e.touches[0].pageX, e.touches[0].pageY);
+    }, 700);
+  });
+
+  li.addEventListener("touchend", () => clearTimeout(longPressTimer));
+  li.addEventListener("touchmove", () => clearTimeout(longPressTimer));
+}
+
+function mostrarMenuContextual(x, y) {
+  menuContextual.style.left = x + "px";
+  menuContextual.style.top = y + "px";
+  menuContextual.style.display = "block";
 }

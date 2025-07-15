@@ -11,9 +11,9 @@ const nomeCliente = document.getElementById("nomeCliente");
 const listaEmprestimos = document.getElementById("listaEmprestimos");
 
 document.getElementById("linkEmprestimo").href = `emprestimo.html?id=${idCliente}`;
-document.getElementById("linkEmprestimo").textContent = "➕ Novo Empréstimo";
+document.getElementById("linkEmprestimo").textContent = "Novo Empréstimo";
 document.getElementById("linkPagamento").href = `pagamento.html?id=${idCliente}`;
-document.getElementById("linkPagamento").textContent = "💰 Registrar Pagamento";
+document.getElementById("linkPagamento").textContent = "Registrar Pagamento";
 
 function calcularSaldoComPagamentos(valorInicial, dataInicial, pagamentos = [], dataFinal = null) {
   const JUROS_DIA = 0.02;
@@ -59,7 +59,7 @@ async function carregarEmprestimos() {
     const saldo = calcularSaldoComPagamentos(emp.valor, emp.data, pagamentos);
 
     const li = document.createElement("li");
-    li.innerHTML = `
+    li.innerHTML = `<div class="card-cliente">
       Valor: R$ ${emp.valor} <br>
       Data: ${emp.data} <br>
       Pagamentos: R$ ${pagamentos.reduce((t, p) => t + p.valor, 0)} <br>
