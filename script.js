@@ -1,7 +1,6 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import { getDatabase, ref, push, onValue, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, push, onValue, get, child, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
@@ -106,7 +105,6 @@ function carregarClientes() {
         <a href="cliente.html?id=${id}">
           ${cliente.nome} - R$ ${totalSaldo.toFixed(2)}
         </a>
-        
       `;
       adicionarEventosContextuais(li, id, cliente.nome);
       listaClientes.appendChild(li);
@@ -133,11 +131,15 @@ function criarMenuContextual() {
   const btnEditar = document.createElement("button");
   btnEditar.textContent = "✏️ Editar";
   btnEditar.style.display = "block";
-  btnEditar.onclick = () => {
+  btnEditar.onclick = async () => {
     const novoNome = prompt("Novo nome do cliente:", clienteSelecionadoNome);
     if (novoNome) {
       const clienteRef = ref(db, `clientes/${clienteSelecionadoId}`);
-      clienteRef.update ? clienteRef.update({ nome: novoNome }) : alert("Erro: método update indisponível.");
+      try {
+        await update(clienteRef, { nome: novoNome });
+      } catch (e) {
+        alert("Erro ao atualizar nome.");
+      }
     }
     menuContextual.style.display = "none";
   };
@@ -148,7 +150,7 @@ function criarMenuContextual() {
   btnExcluir.style.marginTop = "6px";
   btnExcluir.onclick = async () => {
     if (confirm(`Excluir cliente "${clienteSelecionadoNome}"?`)) {
-      await ref(db, `clientes/${clienteSelecionadoId}`).remove();
+      await remove(ref(db, `clientes/${clienteSelecionadoId}`));
     }
     menuContextual.style.display = "none";
   };
