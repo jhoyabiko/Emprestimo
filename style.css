@@ -435,35 +435,43 @@ button:hover,
 
 @media (max-width: 480px) {
   .card-cliente {
-    padding: 14px;
-    font-size: 1.05rem;
-    margin-bottom: 16px;
-    line-height: 1.6;
+    padding: 18px;
+    font-size: 1.1rem;
+    margin-bottom: 20px;
+    background-color: #1b1b1b;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    line-height: 1.7;
   }
 
   .card-cliente strong {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     display: block;
-    margin-top: 8px;
+    margin-top: 10px;
+    color: #ffffff;
   }
 
   .botoes-navegacao {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    margin-top: 20px;
+    gap: 12px;
+    margin-top: 24px;
   }
 
   .botoes-navegacao a {
-    font-size: 1rem;
-    padding: 12px;
+    font-size: 1.05rem;
+    padding: 14px;
     width: 100%;
-    text-align: center;
+    border-radius: 10px;
+    background-color: #2c2c2c;
+    color: #f0f0f0;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
   }
 
   h1, h2 {
-    font-size: 1.3rem;
+    font-size: 1.5rem;
     text-align: center;
+    margin-top: 16px;
   }
 
   #listaEmprestimos li {
