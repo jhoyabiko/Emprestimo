@@ -435,24 +435,38 @@ button:hover,
 
 @media (max-width: 480px) {
   .card-cliente {
-    padding: 10px;
-    font-size: 0.95rem;
+    padding: 14px;
+    font-size: 1.05rem;
+    margin-bottom: 16px;
+    line-height: 1.6;
   }
 
   .card-cliente strong {
-    font-size: 1.05rem;
+    font-size: 1.2rem;
+    display: block;
+    margin-top: 8px;
+  }
+
+  .botoes-navegacao {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 20px;
   }
 
   .botoes-navegacao a {
-    font-size: 0.95rem;
-    padding: 10px 12px;
-  }
-
-  #listaEmprestimos li {
-    margin-bottom: 12px;
+    font-size: 1rem;
+    padding: 12px;
+    width: 100%;
+    text-align: center;
   }
 
   h1, h2 {
+    font-size: 1.3rem;
     text-align: center;
+  }
+
+  #listaEmprestimos li {
+    margin-bottom: 20px;
   }
 }
