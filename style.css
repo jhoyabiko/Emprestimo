@@ -1,5 +1,3 @@
-
-
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
 
@@ -433,4 +431,28 @@ button:hover,
 #btnRegistrar:hover {
   background-color: #444;
   transform: translateY(-1px);
+}
+
+@media (max-width: 480px) {
+  .card-cliente {
+    padding: 10px;
+    font-size: 0.95rem;
+  }
+
+  .card-cliente strong {
+    font-size: 1.05rem;
+  }
+
+  .botoes-navegacao a {
+    font-size: 0.95rem;
+    padding: 10px 12px;
+  }
+
+  #listaEmprestimos li {
+    margin-bottom: 12px;
+  }
+
+  h1, h2 {
+    text-align: center;
+  }
 }
