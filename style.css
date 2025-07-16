@@ -418,13 +418,13 @@ button:hover,
 }
 
 /* Ajuste específico para mobile em cliente, emprestimo e pagamento */
-@media (max-width: 480px) {
+@media (max-width: 800px) {
 
   body.pagina-cliente .container,
   body.pagina-emprestimo .container,
   body.pagina-pagamento .container {
-    width: 500vw !important;
-    max-width: 500vw !important;
+    width: 1000vw !important;
+    max-width: 1000vw !important;
     margin: 0 !important;
     padding: 0px 0px !important;
     border-radius: 0 !important;
