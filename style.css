@@ -495,3 +495,14 @@ button:hover,
     box-sizing: border-box;
   }
 }
+
+@media (max-width: 480px) {
+  .container {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    padding: 24px 16px !important;
+    margin: 0 auto !important;
+    border-radius: 0 !important;
+    box-shadow: none !important;
+  }
+}
