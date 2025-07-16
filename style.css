@@ -3,7 +3,7 @@
 
 
 .container {
-  max-width: 800px;
+  max-width: 500px;
   width: 90%;
   margin: 40px auto;
   background: white;
@@ -63,7 +63,7 @@ ul li strong {
 
 
 
-@media (max-width: 800px) {
+@media (max-width: 480px) {
   h1 {
     font-size: 1.5rem;
   }
@@ -74,7 +74,7 @@ ul li strong {
 
   input,
   select,
-
+  
 }
 
 
@@ -86,39 +86,6 @@ ul li strong {
 
 
 
-
-
-.container {
-  background-color: #1e1e1e;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
-}
-
-
-
-input:focus,
-select:focus {
-  border-color: #cccccc;
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-}
-
-
-@media (prefers-color-scheme: dark) {
 
 
   .container {
@@ -126,9 +93,42 @@ select:focus {
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   }
 
+  
+
+  input:focus,
+  select:focus {
+    border-color: #cccccc;
+  }
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+}
 
 
+@media (prefers-color-scheme: dark) {
+  
 
+  .container {
+    background-color: #1e1e1e;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+  }
+
+  
+
+  
 
   input::placeholder {
     color: #aaa;
@@ -139,13 +139,13 @@ select:focus {
     border-color: #cccccc;
   }
 
+  
 
+  
 
+  
 
-
-
-
-
+  
 }
 
 
@@ -158,11 +158,11 @@ select:focus {
 
 
 
-@media (max-width: 800px) {
+@media (max-width: 600px) {
   .container {
-    width: 100%;
+    width: 95%;
     margin: 20px auto;
-    padding: 500px;
+    padding: 16px;
   }
 
   h1 {
@@ -175,9 +175,9 @@ select:focus {
 
   input,
   select,
+  
 
-
-
+  
 }
 
 body {
@@ -190,7 +190,7 @@ body {
 
 .container {
   background-color: #1a1a1a;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 0 10px rgba(0,0,0,0.3);
 }
 
 
@@ -214,7 +214,25 @@ select:focus {
 
 
 
-.card-cliente label {
+.card-cliente 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+label {
   color: #bcbcbc;
   font-weight: 500;
   display: block;
@@ -225,7 +243,7 @@ input,
 select {
   background-color: #202020;
   color: #f0f0f0;
-
+  
   border-radius: 6px;
   padding: 10px;
   width: 100%;
@@ -241,7 +259,7 @@ button {
   color: #f0f0f0;
   font-weight: 500;
   padding: 10px;
-
+  
   border-radius: 6px;
   width: 100%;
   margin-top: 16px;
@@ -335,7 +353,7 @@ a.botao-navegacao {
   border-radius: 8px;
   font-weight: 500;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
   text-align: center;
 }
 
@@ -346,8 +364,7 @@ a.botao-navegacao:hover {
 }
 
 /* Botões Adicionar Cliente e Sair */
-#btnAdicionar,
-#btnLogout {
+#btnAdicionar, #btnLogout {
   background-color: #2e7d32;
   color: #ffffff;
   padding: 10px 18px;
@@ -358,11 +375,10 @@ a.botao-navegacao:hover {
   font-size: 1rem;
   cursor: pointer;
   transition: background-color 0.3s ease, transform 0.2s ease;
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.3);
 }
 
-#btnAdicionar:hover,
-#btnLogout:hover {
+#btnAdicionar:hover, #btnLogout:hover {
   background-color: #388e3c;
   transform: translateY(-1px);
 }
@@ -381,7 +397,7 @@ button,
   cursor: pointer;
   margin-top: 12px;
   width: 100%;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
@@ -406,7 +422,7 @@ button:hover,
   cursor: pointer;
   margin-top: 12px;
   width: 100%;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3);
   transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
@@ -417,17 +433,38 @@ button:hover,
   transform: translateY(-1px);
 }
 
-/* Ajuste específico para mobile em cliente, emprestimo e pagamento */
-@media (max-width: 800px) {
-
+@media (max-width: 480px) {
   body.pagina-cliente .container,
   body.pagina-emprestimo .container,
   body.pagina-pagamento .container {
-    width: 0vw !important;
-    max-width: 0vw !important;
-    margin: 0 !important;
-    padding: 900px 900px !important;
-    border-radius: 0 !important;
+    width: 100%;
+    padding: 28px 22px;
+    margin: 0 auto;
+    border-radius: 0;
+    font-size: 1.2rem;
+    min-height: 100vh;
+    box-sizing: border-box;
+  }
+
+  body.pagina-cliente h1,
+  body.pagina-emprestimo h1,
+  body.pagina-pagamento h1,
+  body.pagina-cliente h2,
+  body.pagina-emprestimo h2,
+  body.pagina-pagamento h2 {
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 16px;
+  }
+
+  body.pagina-cliente button,
+  body.pagina-emprestimo button,
+  body.pagina-pagamento button,
+  body.pagina-cliente input,
+  body.pagina-emprestimo input,
+  body.pagina-pagamento input {
+    font-size: 1.2rem;
+    width: 100%;
     box-sizing: border-box;
   }
 }
