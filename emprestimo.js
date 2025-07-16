@@ -1,5 +1,6 @@
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, push, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, push, get, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
@@ -38,30 +39,56 @@ async function carregarEmprestimos() {
   }
 
   const clienteSnap = await get(ref(db, `clientes/${idCliente}`));
-  if (!clienteSnap.exists()) {
-    titulo.innerText = "Cliente não encontrado";
-    lista.innerHTML = "<li>Erro ao carregar dados.</li>";
-    return;
-  }
-
   const cliente = clienteSnap.val();
-  titulo.innerText = `Empréstimos de ${cliente.nome}`;
+  titulo.textContent = `Empréstimos de ${cliente.nome}`;
+  const emprestimos = cliente.emprestimos || {};
 
   lista.innerHTML = "";
 
-  if (!cliente.emprestimos) {
-    lista.innerHTML = "<li>Nenhum empréstimo encontrado.</li>";
-    return;
-  }
-
-  for (const [idEmp, emp] of Object.entries(cliente.emprestimos)) {
+  Object.entries(emprestimos).forEach(([key, emp]) => {
     const li = document.createElement("li");
-    li.innerHTML = `<div class="card-cliente">
-      Valor: R$ ${parseFloat(emp.valor).toFixed(2)}<br>
-      Data: ${emp.data}
-    `;
+    li.textContent = `R$ ${emp.valor.toFixed(2)} - ${emp.data}`;
+
+    // Clique direito para editar
+    li.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      editarEmprestimo(key, emp);
+    });
+
+    // Toque longo para editar
+    let pressTimer;
+    li.addEventListener("touchstart", () => {
+      pressTimer = setTimeout(() => {
+        editarEmprestimo(key, emp);
+      }, 600);
+    });
+    li.addEventListener("touchend", () => {
+      clearTimeout(pressTimer);
+    });
+
     lista.appendChild(li);
-  }
+  });
+}
+
+function editarEmprestimo(chave, dados) {
+  const novoValor = prompt("Novo valor do empréstimo:", dados.valor);
+  if (novoValor === null) return;
+  const valorNum = parseFloat(novoValor);
+  if (isNaN(valorNum) || valorNum <= 0) return alert("Valor inválido");
+
+  const novaData = prompt("Nova data do empréstimo:", dados.data);
+  if (!novaData) return;
+
+  update(ref(db, `clientes/${idCliente}/emprestimos/${chave}`), {
+    valor: valorNum,
+    data: novaData
+  }).then(() => {
+    alert("Empréstimo atualizado!");
+    carregarEmprestimos();
+  }).catch(err => {
+    console.error("Erro ao editar:", err);
+    alert("Erro ao editar.");
+  });
 }
 
 carregarEmprestimos();
