@@ -433,7 +433,7 @@ button:hover,
   transform: translateY(-1px);
 }
 
-@media (max-width: 800px) {
+@media (max-width: 480px) {
   body.pagina-cliente .container,
   body.pagina-emprestimo .container,
   body.pagina-pagamento .container {
