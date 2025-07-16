@@ -434,34 +434,35 @@ button:hover,
 }
 
 @media (max-width: 480px) {
-  .container {
-    all: unset !important;
-    display: block !important;
-    width: 100% !important;
-    margin: 0 !important;
-    padding: 24px 20px !important;
-    box-sizing: border-box !important;
-    min-height: 100vh !important;
-    font-size: 1.2rem !important;
-    background-color: #1c1c1c !important;
-    border-radius: 0 !important;
-    box-shadow: none !important;
-    color: inherit !important;
+  body.full-mobile {
+    padding: 0;
+    margin: 0;
   }
 
-  .container h1,
-  .container h2 {
+  body.full-mobile .container {
+    width: 100vw !important;
+    max-width: 100vw !important;
+    margin: 0 !important;
+    padding: 20px !important;
+    border-radius: 0 !important;
+    font-size: 1.2rem !important;
+    box-sizing: border-box !important;
+    min-height: 100vh !important;
+  }
+
+  body.full-mobile h1,
+  body.full-mobile h2 {
     font-size: 1.6rem !important;
     text-align: center !important;
     margin-bottom: 20px !important;
   }
 
-  .container input,
-  .container button,
-  .container select {
+  body.full-mobile input,
+  body.full-mobile select,
+  body.full-mobile button {
     width: 100% !important;
     font-size: 1.2rem !important;
-    box-sizing: border-box !important;
     margin-bottom: 16px !important;
+    box-sizing: border-box !important;
   }
 }
