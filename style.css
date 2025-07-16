@@ -433,36 +433,29 @@ button:hover,
   transform: translateY(-1px);
 }
 
-@media (max-width: 480px) {
-  body.full-mobile {
-    padding: 0;
-    margin: 0;
-  }
-
-  body.full-mobile .container {
+@media (max-width: 600px) {
+  .container {
+    all: unset !important;
+    display: block !important;
+    background: #1c1c1c !important;
     width: 100vw !important;
-    max-width: 100vw !important;
+    height: auto !important;
+    padding: 24px !important;
     margin: 0 !important;
-    padding: 20px !important;
     border-radius: 0 !important;
+    box-shadow: none !important;
     font-size: 1.2rem !important;
     box-sizing: border-box !important;
-    min-height: 100vh !important;
+    color: white !important;
   }
 
-  body.full-mobile h1,
-  body.full-mobile h2 {
-    font-size: 1.6rem !important;
-    text-align: center !important;
-    margin-bottom: 20px !important;
-  }
-
-  body.full-mobile input,
-  body.full-mobile select,
-  body.full-mobile button {
+  .container * {
+    font-size: 1.1rem !important;
     width: 100% !important;
-    font-size: 1.2rem !important;
-    margin-bottom: 16px !important;
     box-sizing: border-box !important;
+  }
+
+  button {
+    padding: 12px !important;
   }
 }
