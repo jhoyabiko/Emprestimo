@@ -434,37 +434,34 @@ button:hover,
 }
 
 @media (max-width: 480px) {
-  body.pagina-cliente .container,
-  body.pagina-emprestimo .container,
-  body.pagina-pagamento .container {
+  .container {
+    all: unset !important;
+    display: block !important;
     width: 100% !important;
-    max-width: none !important;
     margin: 0 !important;
-    padding: 28px 20px !important;
+    padding: 24px 20px !important;
+    box-sizing: border-box !important;
+    min-height: 100vh !important;
+    font-size: 1.2rem !important;
+    background-color: #1c1c1c !important;
     border-radius: 0 !important;
-    font-size: 1.2rem;
-    min-height: 100vh;
-    box-sizing: border-box;
+    box-shadow: none !important;
+    color: inherit !important;
   }
 
-  body.pagina-cliente h1,
-  body.pagina-emprestimo h1,
-  body.pagina-pagamento h1,
-  body.pagina-cliente h2,
-  body.pagina-emprestimo h2,
-  body.pagina-pagamento h2 {
-    font-size: 1.6rem;
-    text-align: center;
+  .container h1,
+  .container h2 {
+    font-size: 1.6rem !important;
+    text-align: center !important;
+    margin-bottom: 20px !important;
   }
 
-  body.pagina-cliente button,
-  body.pagina-emprestimo button,
-  body.pagina-pagamento button,
-  body.pagina-cliente input,
-  body.pagina-emprestimo input,
-  body.pagina-pagamento input {
-    font-size: 1.2rem;
-    width: 100%;
-    box-sizing: border-box;
+  .container input,
+  .container button,
+  .container select {
+    width: 100% !important;
+    font-size: 1.2rem !important;
+    box-sizing: border-box !important;
+    margin-bottom: 16px !important;
   }
 }
