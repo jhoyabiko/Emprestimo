@@ -469,17 +469,16 @@ button:hover,
   }
 }
 
-/* Ajuste de responsividade mobile para container */
+/* Ajuste específico para mobile em cliente, emprestimo e pagamento */
 @media (max-width: 480px) {
   body.pagina-cliente .container,
   body.pagina-emprestimo .container,
   body.pagina-pagamento .container {
     width: 100vw !important;
     max-width: 100vw !important;
-    padding: 24px 16px !important;
-    margin: 0 auto !important;
+    margin: 0 !important;
+    padding: 20px 10px !important;
     border-radius: 0 !important;
-    box-shadow: none !important;
-    min-height: 100vh !important;
+    box-sizing: border-box;
   }
 }
