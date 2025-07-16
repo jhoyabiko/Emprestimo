@@ -160,9 +160,9 @@ select:focus {
 
 @media (max-width: 800px) {
   .container {
-    width: 95%;
+    width: 100%;
     margin: 20px auto;
-    padding: 16px;
+    padding: 500px;
   }
 
   h1 {
@@ -426,7 +426,7 @@ button:hover,
     width: 0vw !important;
     max-width: 0vw !important;
     margin: 0 !important;
-    padding: 0px 0px !important;
+    padding: 900px 900px !important;
     border-radius: 0 !important;
     box-sizing: border-box;
   }
