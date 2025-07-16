@@ -437,10 +437,11 @@ button:hover,
   body.pagina-cliente .container,
   body.pagina-emprestimo .container,
   body.pagina-pagamento .container {
-    width: 100%;
-    padding: 28px 22px;
-    margin: 0 auto;
-    border-radius: 0;
+    width: 100% !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 28px 20px !important;
+    border-radius: 0 !important;
     font-size: 1.2rem;
     min-height: 100vh;
     box-sizing: border-box;
@@ -454,7 +455,6 @@ button:hover,
   body.pagina-pagamento h2 {
     font-size: 1.6rem;
     text-align: center;
-    margin-bottom: 16px;
   }
 
   body.pagina-cliente button,
