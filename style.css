@@ -434,26 +434,37 @@ button:hover,
 }
 
 @media (max-width: 480px) {
-  body.pagina-pagamento .container,
-  body.pagina-cliente .container {
-    width: 98%;
-    padding: 26px 20px;
-    margin: 12px auto;
-    font-size: 1.15rem;
+  body.pagina-cliente .container,
+  body.pagina-emprestimo .container,
+  body.pagina-pagamento .container {
+    width: 100%;
+    padding: 28px 22px;
+    margin: 0 auto;
+    border-radius: 0;
+    font-size: 1.2rem;
+    min-height: 100vh;
+    box-sizing: border-box;
   }
 
-  body.pagina-pagamento h1,
   body.pagina-cliente h1,
-  body.pagina-pagamento h2,
-  body.pagina-cliente h2 {
-    font-size: 1.5rem;
+  body.pagina-emprestimo h1,
+  body.pagina-pagamento h1,
+  body.pagina-cliente h2,
+  body.pagina-emprestimo h2,
+  body.pagina-pagamento h2 {
+    font-size: 1.6rem;
     text-align: center;
+    margin-bottom: 16px;
   }
 
-  body.pagina-pagamento input,
-  body.pagina-cliente input,
+  body.pagina-cliente button,
+  body.pagina-emprestimo button,
   body.pagina-pagamento button,
-  body.pagina-cliente button {
-    font-size: 1.1rem;
+  body.pagina-cliente input,
+  body.pagina-emprestimo input,
+  body.pagina-pagamento input {
+    font-size: 1.2rem;
+    width: 100%;
+    box-sizing: border-box;
   }
 }
