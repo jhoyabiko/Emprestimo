@@ -3,7 +3,7 @@
 
 
 .container {
-  max-width: 500px;
+  max-width: 800px;
   width: 90%;
   margin: 40px auto;
   background: white;
@@ -63,7 +63,7 @@ ul li strong {
 
 
 
-@media (max-width: 480px) {
+@media (max-width: 800px) {
   h1 {
     font-size: 1.5rem;
   }
@@ -158,7 +158,7 @@ select:focus {
 
 
 
-@media (max-width: 600px) {
+@media (max-width: 800px) {
   .container {
     width: 95%;
     margin: 20px auto;
@@ -423,8 +423,8 @@ button:hover,
   body.pagina-cliente .container,
   body.pagina-emprestimo .container,
   body.pagina-pagamento .container {
-    width: 1000vw !important;
-    max-width: 1000vw !important;
+    width: 0vw !important;
+    max-width: 0vw !important;
     margin: 0 !important;
     padding: 0px 0px !important;
     border-radius: 0 !important;
