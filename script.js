@@ -48,12 +48,12 @@ onAuthStateChanged(auth, user => {
 
 // Pressionar ENTER faz login no campo senha ou email
 document.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        if (document.activeElement.id === "email" || document.activeElement.id === "senha") {
-            event.preventDefault();
-            document.getElementById("btnLogin").click();
-        }
+  if (event.key === "Enter") {
+    if (document.activeElement.id === "email" || document.activeElement.id === "senha") {
+      event.preventDefault();
+      document.getElementById("btnLogin").click();
     }
+  }
 });
 
 function calcularSaldoComPagamentos(valorInicial, dataInicial, pagamentos = [], dataFinal = null) {

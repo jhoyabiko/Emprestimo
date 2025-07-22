@@ -28,13 +28,19 @@ function calcularSaldoComPagamentos(valorInicial, dataInicial, pagamentos = [], 
 
   for (let pagamento of pagamentosOrdenados) {
     const dias = Math.floor((pagamento.data - dataAnterior) / (1000 * 60 * 60 * 24));
-    if (dias > 0) saldo += saldo * JUROS_DIA * dias;
+    if (dias > 0) {
+      const juros = saldo * JUROS_DIA * dias;
+      saldo += juros;
+    }
     saldo -= pagamento.valor;
     dataAnterior = pagamento.data;
   }
 
   const diasRestantes = Math.floor((dataFinal - dataAnterior) / (1000 * 60 * 60 * 24));
-  if (diasRestantes > 0) saldo += saldo * JUROS_DIA * diasRestantes;
+  if (diasRestantes > 0 && saldo > 0) {
+    const juros = saldo * JUROS_DIA * diasRestantes;
+    saldo += juros;
+  }
 
   return saldo;
 }
@@ -73,49 +79,3 @@ if (idCliente) {
   carregarCliente();
   carregarEmprestimos();
 }
-
-// === MENU DE CONTEXTO (clique direito / toque longo) ===
-const menuContexto = document.getElementById('menu-contexto');
-let itemSelecionado = null;
-
-// Mostrar menu com botão direito
-document.addEventListener('contextmenu', function (e) {
-  const alvo = e.target.closest('.card-cliente');
-  if (alvo) {
-    e.preventDefault();
-    itemSelecionado = alvo;
-    menuContexto.style.top = `${e.pageY}px`;
-    menuContexto.style.left = `${e.pageX}px`;
-    menuContexto.style.display = 'flex';
-  } else {
-    menuContexto.style.display = 'none';
-  }
-});
-
-// Toque longo (mobile)
-let toqueTimer;
-document.addEventListener('touchstart', function (e) {
-  const alvo = e.target.closest('.card-cliente');
-  if (alvo) {
-    toqueTimer = setTimeout(() => {
-      itemSelecionado = alvo;
-      const touch = e.touches[0];
-      menuContexto.style.top = `${touch.pageY}px`;
-      menuContexto.style.left = `${touch.pageX}px`;
-      menuContexto.style.display = 'flex';
-    }, 700);
-  }
-});
-document.addEventListener('touchend', () => clearTimeout(toqueTimer));
-document.addEventListener('touchmove', () => clearTimeout(toqueTimer));
-document.addEventListener('click', () => menuContexto.style.display = 'none');
-
-document.getElementById('btn-editar').addEventListener('click', () => {
-  alert('Editar: ' + itemSelecionado?.innerText);
-});
-document.getElementById('btn-excluir').addEventListener('click', () => {
-  const confirmacao = confirm('Deseja excluir?');
-  if (confirmacao && itemSelecionado) {
-    itemSelecionado.remove();
-  }
-});
