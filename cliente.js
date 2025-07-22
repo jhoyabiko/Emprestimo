@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, get, child, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
@@ -70,10 +70,94 @@ async function carregarEmprestimos() {
       Data: ${emp.data} <br>
       Pagamentos: R$ ${pagamentos.reduce((t, p) => t + p.valor, 0)} <br>
       <strong>Saldo atual com juros: R$ ${saldo.toFixed(2)}</strong>
-    `;
+    </div>`;
+
+    li.addEventListener("contextmenu", (e) => {
+      e.preventDefault();
+      mostrarMenuContextual(e.pageX, e.pageY, id, emp);
+    });
+
+    let pressTimer;
+    li.addEventListener("touchstart", (e) => {
+      pressTimer = setTimeout(() => {
+        mostrarMenuContextual(e.touches[0].pageX, e.touches[0].pageY, id, emp);
+      }, 700);
+    });
+
+    li.addEventListener("touchend", () => clearTimeout(pressTimer));
+    li.addEventListener("touchmove", () => clearTimeout(pressTimer));
+
     listaEmprestimos.appendChild(li);
   }
 }
+
+let menuContextual;
+let clienteSelecionadoId = idCliente;
+let emprestimoSelecionadoId = null;
+let emprestimoSelecionadoDados = null;
+
+function criarMenuContextual() {
+  menuContextual = document.createElement("div");
+  menuContextual.style.position = "absolute";
+  menuContextual.style.background = "white";
+  menuContextual.style.border = "1px solid #ccc";
+  menuContextual.style.borderRadius = "6px";
+  menuContextual.style.boxShadow = "0 2px 8px rgba(0,0,0,0.2)";
+  menuContextual.style.padding = "8px";
+  menuContextual.style.zIndex = 9999;
+  menuContextual.style.display = "none";
+
+  const btnEditar = document.createElement("button");
+  btnEditar.textContent = "✏️ Editar";
+  btnEditar.style.display = "block";
+  btnEditar.onclick = async () => {
+    const novoValor = prompt("Novo valor do empréstimo:", emprestimoSelecionadoDados.valor);
+    if (novoValor === null) return;
+    const valorNum = parseFloat(novoValor);
+    if (isNaN(valorNum) || valorNum <= 0) return alert("Valor inválido");
+
+    const novaData = prompt("Nova data do empréstimo:", emprestimoSelecionadoDados.data);
+    if (!novaData) return;
+
+    await update(ref(db, `clientes/${clienteSelecionadoId}/emprestimos/${emprestimoSelecionadoId}`), {
+      valor: valorNum,
+      data: novaData
+    });
+
+    menuContextual.style.display = "none";
+    carregarEmprestimos();
+  };
+
+  const btnExcluir = document.createElement("button");
+  btnExcluir.textContent = "🗑️ Excluir";
+  btnExcluir.style.display = "block";
+  btnExcluir.style.marginTop = "6px";
+  btnExcluir.onclick = async () => {
+    if (confirm("Tem certeza que deseja excluir este empréstimo?")) {
+      await remove(ref(db, `clientes/${clienteSelecionadoId}/emprestimos/${emprestimoSelecionadoId}`));
+      carregarEmprestimos();
+    }
+    menuContextual.style.display = "none";
+  };
+
+  menuContextual.appendChild(btnEditar);
+  menuContextual.appendChild(btnExcluir);
+  document.body.appendChild(menuContextual);
+}
+
+function mostrarMenuContextual(x, y, idEmprestimo, dados) {
+  emprestimoSelecionadoId = idEmprestimo;
+  emprestimoSelecionadoDados = dados;
+  menuContextual.style.left = x + "px";
+  menuContextual.style.top = y + "px";
+  menuContextual.style.display = "block";
+}
+
+document.addEventListener("click", () => {
+  if (menuContextual) menuContextual.style.display = "none";
+});
+
+criarMenuContextual();
 
 if (idCliente) {
   carregarCliente();
