@@ -46,14 +46,13 @@ onAuthStateChanged(auth, user => {
   }
 });
 
-// Pressionar ENTER faz login no campo senha ou email
 document.addEventListener("keypress", function(event) {
-  if (event.key === "Enter") {
-    if (document.activeElement.id === "email" || document.activeElement.id === "senha") {
-      event.preventDefault();
-      document.getElementById("btnLogin").click();
+    if (event.key === "Enter") {
+        if (document.activeElement.id === "email" || document.activeElement.id === "senha") {
+            event.preventDefault();
+            document.getElementById("btnLogin").click();
+        }
     }
-  }
 });
 
 function calcularSaldoComPagamentos(valorInicial, dataInicial, pagamentos = [], dataFinal = null) {
@@ -69,13 +68,19 @@ function calcularSaldoComPagamentos(valorInicial, dataInicial, pagamentos = [], 
 
   for (let pagamento of pagamentosOrdenados) {
     const dias = Math.floor((pagamento.data - dataAnterior) / (1000 * 60 * 60 * 24));
-    if (dias > 0) saldo += saldo * JUROS_DIA * dias;
+    if (dias > 0) {
+      const juros = saldo * JUROS_DIA * dias;
+      saldo += juros;
+    }
     saldo -= pagamento.valor;
     dataAnterior = pagamento.data;
   }
 
   const diasRestantes = Math.floor((dataFinal - dataAnterior) / (1000 * 60 * 60 * 24));
-  if (diasRestantes > 0) saldo += saldo * JUROS_DIA * diasRestantes;
+  if (diasRestantes > 0 && saldo > 0) {
+    const juros = saldo * JUROS_DIA * diasRestantes;
+    saldo += juros;
+  }
 
   return saldo;
 }
@@ -86,28 +91,10 @@ function carregarClientes() {
     const clientes = snapshot.val();
     if (!clientes) return;
 
+    const hoje = new Date();
+
     for (const [id, cliente] of Object.entries(clientes)) {
-      const emprestimosRef = ref(db, `clientes/${id}/emprestimos`);
-      const emprestimosSnap = await get(emprestimosRef);
-      const emprestimos = emprestimosSnap.val();
-
-      let totalSaldo = 0;
-      if (emprestimos) {
-        for (const [idEmp, emp] of Object.entries(emprestimos)) {
-          const pagamentosSnap = await get(child(emprestimosRef, `${idEmp}/pagamentos`));
-          const pagamentos = pagamentosSnap.exists() ? Object.values(pagamentosSnap.val()) : [];
-          totalSaldo += calcularSaldoComPagamentos(emp.valor, emp.data, pagamentos);
-        }
-      }
-
-      const li = document.createElement("li");
-      li.innerHTML = `
-        <a href="cliente.html?id=${id}">
-          ${cliente.nome} - R$ ${totalSaldo.toFixed(2)}
-        </a>
-      `;
-      adicionarEventosContextuais(li, id, cliente.nome);
-      listaClientes.appendChild(li);
+      await processarCliente(id, cliente, hoje);
     }
   });
 }
@@ -189,4 +176,74 @@ function mostrarMenuContextual(x, y) {
   menuContextual.style.left = x + "px";
   menuContextual.style.top = y + "px";
   menuContextual.style.display = "block";
+}
+
+
+async function processarCliente(id, cliente, hoje) {
+  const emprestimosRef = ref(db, `clientes/${id}/emprestimos`);
+  const emprestimosSnap = await get(emprestimosRef);
+  const emprestimos = emprestimosSnap.val();
+
+  let totalSaldo = 0;
+  let totalJuros = 0;
+  let alerta = "";
+
+  if (emprestimos) {
+    for (const [idEmp, emp] of Object.entries(emprestimos)) {
+      const pagamentosSnap = await get(child(emprestimosRef, `${idEmp}/pagamentos`));
+      const pagamentos = pagamentosSnap.exists() ? Object.values(pagamentosSnap.val()) : [];
+
+      const { saldo, jurosTotais } = calcularSaldoEJuros(emp.valor, emp.data, pagamentos);
+      totalSaldo += saldo;
+      totalJuros += jurosTotais;
+
+      const dataEmp = new Date(emp.data);
+      const diffDias = Math.floor((hoje - dataEmp) / (1000 * 60 * 60 * 24));
+      if (diffDias > 30) {
+        alerta = '<span class="exclamacao-vermelha">❗</span>';
+      }
+    }
+  }
+
+  const li = document.createElement("li");
+  li.innerHTML = `
+    <a href="cliente.html?id=${id}" title="Juros acumulados: R$ ${totalJuros.toFixed(2)}">
+      ${cliente.nome} - R$ ${totalSaldo.toFixed(2)} ${alerta}
+    </a>
+  `;
+  adicionarEventosContextuais(li, id, cliente.nome);
+  listaClientes.appendChild(li);
+}
+
+function calcularSaldoEJuros(valorInicial, dataInicial, pagamentos = [], dataFinal = null) {
+  const JUROS_DIA = 0.02;
+  let saldo = valorInicial;
+  let jurosTotais = 0;
+  let dataAnterior = new Date(dataInicial);
+  const hoje = new Date();
+  dataFinal = dataFinal ? new Date(dataFinal) : hoje;
+
+  const pagamentosOrdenados = pagamentos
+    .map(p => ({ ...p, data: new Date(p.data) }))
+    .sort((a, b) => a.data - b.data);
+
+  for (let pagamento of pagamentosOrdenados) {
+    const dias = Math.floor((pagamento.data - dataAnterior) / (1000 * 60 * 60 * 24));
+    if (dias > 0) {
+      const juros = saldo * JUROS_DIA * dias;
+      saldo += juros;
+      jurosTotais += juros;
+    }
+    saldo -= pagamento.valor;
+    dataAnterior = pagamento.data;
+  }
+
+  const diasRestantes = Math.floor((dataFinal - dataAnterior) / (1000 * 60 * 60 * 24));
+  if (diasRestantes > 0 && saldo > 0) {
+    const juros = saldo * JUROS_DIA * diasRestantes;
+    saldo += juros;
+    jurosTotais += juros;
+  }
+
+  return { saldo, jurosTotais };
 }
