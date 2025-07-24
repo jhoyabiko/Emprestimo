@@ -206,11 +206,13 @@ async function processarCliente(id, cliente, hoje) {
   }
 
   const li = document.createElement("li");
-  li.innerHTML = `
-    <a href="cliente.html?id=${id}" title="Juros acumulados: R$ ${totalJuros.toFixed(2)}">
-      ${cliente.nome} - R$ ${totalSaldo.toFixed(2)} ${alerta}
-    </a>
-  `;
+li.innerHTML = `
+  <a href="cliente.html?id=${id}" class="cliente-item">
+    <span class="cliente-nome">${cliente.nome}</span>
+    <span class="cliente-valor">R$ ${totalSaldo.toFixed(2)} ${alerta}</span>
+  </a>
+`;
+
   adicionarEventosContextuais(li, id, cliente.nome);
   listaClientes.appendChild(li);
 }
