@@ -396,3 +396,23 @@ button:hover,
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
 }
+a.cliente-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 6px 0;
+}
+
+a.cliente-item .cliente-nome {
+  font-weight: 500;
+  color: #f0f0f0;
+}
+
+a.cliente-item .cliente-valor {
+  font-weight: 500;
+  color: #cccccc;
+  font-size: 0.95rem;
+  text-align: right;
+  min-width: 100px;
+}
