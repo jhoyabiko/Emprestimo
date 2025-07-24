@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Empréstimo Parcelado</title>
+  <link rel="stylesheet" href="style.css" />
+  <script type="module" src="parcelado.js" defer></script>
+</head>
+<body class="pagina-emprestimo">
+  <div class="container">
+    <h1>Empréstimo Parcelado</h1>
+    <label for="valorTotal">Valor Total:</label>
+    <input type="number" id="valorTotal" placeholder="Ex: 1000" />
+
+    <label for="valorParcela">Valor da Parcela:</label>
+    <input type="number" id="valorParcela" placeholder="Ex: 200" />
+
+    <label for="quantidade">Quantidade de Parcelas:</label>
+    <input type="number" id="quantidade" placeholder="Ex: 5" />
+
+    <label for="dataInicio">Data da 1ª Parcela:</label>
+    <input type="date" id="dataInicio" />
+
+    <button id="btnRegistrar">Registrar Parcelado</button>
+    <a href="index.html" class="botao-navegacao">⬅️ Voltar</a>
+  </div>
+</body>
+</html>
