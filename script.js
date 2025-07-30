@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, createUserWithEmailAndPassword, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, push, onValue, get, child, update, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { firebaseConfig } from './firebase-config.js';
 
@@ -47,12 +47,12 @@ onAuthStateChanged(auth, user => {
 });
 
 document.addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        if (document.activeElement.id === "email" || document.activeElement.id === "senha") {
-            event.preventDefault();
-            document.getElementById("btnLogin").click();
-        }
+  if (event.key === "Enter") {
+    if (document.activeElement.id === "email" || document.activeElement.id === "senha") {
+      event.preventDefault();
+      document.getElementById("btnLogin").click();
     }
+  }
 });
 
 function calcularSaldoComPagamentos(valorInicial, dataInicial, pagamentos = [], dataFinal = null) {
@@ -116,7 +116,7 @@ function criarMenuContextual() {
   menuContextual.style.display = "none";
 
   const btnEditar = document.createElement("button");
-  btnEditar.textContent = "✏️ Editar";
+  btnEditar.textContent = "‚úèÔ∏è Editar";
   btnEditar.style.display = "block";
   btnEditar.onclick = async () => {
     const novoNome = prompt("Novo nome do cliente:", clienteSelecionadoNome);
@@ -132,7 +132,7 @@ function criarMenuContextual() {
   };
 
   const btnExcluir = document.createElement("button");
-  btnExcluir.textContent = "🗑️ Excluir";
+  btnExcluir.textContent = "üóëÔ∏è Excluir";
   btnExcluir.style.display = "block";
   btnExcluir.style.marginTop = "6px";
   btnExcluir.onclick = async () => {
@@ -200,18 +200,18 @@ async function processarCliente(id, cliente, hoje) {
       const dataEmp = new Date(emp.data);
       const diffDias = Math.floor((hoje - dataEmp) / (1000 * 60 * 60 * 24));
       if (diffDias > 30) {
-        alerta = '<span class="exclamacao-vermelha">❗</span>';
+        alerta = '<span class="exclamacao-vermelha">‚ùó</span>';
       }
     }
   }
 
   const li = document.createElement("li");
-li.innerHTML = `
-  <a href="cliente.html?id=${id}" class="cliente-item">
-    <span class="cliente-nome">${cliente.nome}</span>
-    <span class="cliente-valor">R$ ${totalSaldo.toFixed(2)} ${alerta}</span>
-  </a>
-`;
+  li.innerHTML = `
+    <a href="cliente.html?id=${id}" class="cliente-item">
+      <span class="cliente-nome">${cliente.nome}</span>
+      <span class="cliente-valor">R$ ${totalSaldo.toFixed(2)} ${alerta}</span>
+    </a>
+  `;
 
   adicionarEventosContextuais(li, id, cliente.nome);
   listaClientes.appendChild(li);
@@ -249,3 +249,30 @@ function calcularSaldoEJuros(valorInicial, dataInicial, pagamentos = [], dataFin
 
   return { saldo, jurosTotais };
 }
+
+// REGISTRAR CLIENTES FICTÍCIOS
+async function registrarClientesFicticios() {
+  const clienteSnap = await get(ref(db, "clientes"));
+  const clientes = clienteSnap.val();
+
+  if (clientes) {
+    for (const [id, cliente] of Object.entries(clientes)) {
+      try {
+        const email = `${cliente.nome}@gmail.com`;
+        const senha = "a1a2a3";
+        await createUserWithEmailAndPassword(auth, email, senha);
+      } catch (error) {
+        console.error("Erro ao registrar cliente:", error.message);
+      }
+    }
+  }
+}
+
+// Executa o cadastro de clientes fictícios apenas uma vez
+//verificar se pode ser chamado apenas por voce
+document.addEventListener('DOMContentLoaded', () => {
+  if (auth.currentUser && auth.currentUser.email === "jhoyabiko8@gmail.com") {
+    registrarClientesFicticios();
+  }
+});
+
