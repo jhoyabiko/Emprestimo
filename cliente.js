@@ -1,11 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, get, child, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getDatabase(app);
+const auth = getAuth(app);
 
 const params = new URLSearchParams(location.search);
 let idCliente = params.get("id");
@@ -19,6 +19,7 @@ document.getElementById("linkPagamento").textContent = "Registrar Pagamento";
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
+    // Verificar se o ID do cliente está correto
     if (!idCliente || user.email !== 'jhoyabiko8@gmail.com') {
       idCliente = await obterIdClientePeloEmail(user.email);
     }
