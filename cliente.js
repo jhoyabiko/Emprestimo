@@ -1,12 +1,14 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, get, child, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
 const db = getDatabase(app);
 
 const params = new URLSearchParams(location.search);
-const idCliente = params.get("id");
+let idCliente = params.get("id");
 const nomeCliente = document.getElementById("nomeCliente");
 const listaEmprestimos = document.getElementById("listaEmprestimos");
 
@@ -43,6 +45,28 @@ function calcularSaldoComPagamentos(valorInicial, dataInicial, pagamentos = [], 
   }
 
   return saldo;
+}
+
+// Verificação de autenticação
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    if (!idCliente || user.email !== 'jhoyabiko8@gmail.com') {
+      idCliente = await carregarIdCliente(user.email);
+    }
+    carregarCliente();
+    carregarEmprestimos();
+  } else {
+    window.location.href = "index.html";
+  }
+});
+
+async function carregarIdCliente(email) {
+  const nome = email.split('@')[0]; // pressupõe que o email é do formato <nome>@gmail.com
+  const clienteSnap = await get(ref(db, `clientes`));
+  const clientes = clienteSnap.val();
+  
+  const cliente = Object.entries(clientes).find(([key, cli]) => cli.nome.toLowerCase() === nome.toLowerCase());
+  return cliente ? cliente[0] : null; // retorna o id do cliente
 }
 
 async function carregarCliente() {
@@ -109,7 +133,7 @@ function criarMenuContextual() {
   menuContextual.style.display = "none";
 
   const btnEditar = document.createElement("button");
-  btnEditar.textContent = "✏️ Editar";
+  btnEditar.textContent = "Editar";
   btnEditar.style.display = "block";
   btnEditar.onclick = async () => {
     const novoValor = prompt("Novo valor do empréstimo:", emprestimoSelecionadoDados.valor);
@@ -133,7 +157,7 @@ function criarMenuContextual() {
   };
 
   const btnExcluir = document.createElement("button");
-  btnExcluir.textContent = "🗑️ Excluir";
+  btnExcluir.textContent = "Excluir";
   btnExcluir.style.display = "block";
   btnExcluir.style.marginTop = "6px";
   btnExcluir.onclick = async () => {
@@ -162,11 +186,6 @@ document.addEventListener("click", () => {
 });
 
 criarMenuContextual();
-
-if (idCliente) {
-  carregarCliente();
-  carregarEmprestimos();
-}
 
 const linkParcelado = document.createElement("a");
 linkParcelado.href = `parcelado.html?id=${idCliente}`;
