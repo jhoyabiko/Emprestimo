@@ -1,11 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { getDatabase, ref, get, child, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
 const db = getDatabase(app);
+const auth = getAuth(app);
 
 const params = new URLSearchParams(location.search);
 let idCliente = params.get("id");
@@ -19,11 +19,16 @@ document.getElementById("linkPagamento").textContent = "Registrar Pagamento";
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    if (!idCliente || user.email !== 'jhoyabiko8@gmail.com') {
+    if (user.email !== 'jhoyabiko8@gmail.com') {
       idCliente = await obterIdClientePeloEmail(user.email);
     }
-    carregarCliente(idCliente);
-    carregarEmprestimos(idCliente);
+    if (idCliente) {
+      carregarCliente();
+      carregarEmprestimos();
+    } else {
+      alert("Cliente não encontrado.");
+      window.location.href = "index.html";
+    }
   } else {
     window.location.href = "index.html";
   }
@@ -32,6 +37,7 @@ onAuthStateChanged(auth, async (user) => {
 async function obterIdClientePeloEmail(email) {
   const clientesSnap = await get(ref(db, 'clientes'));
   const clientes = clientesSnap.val();
+
   for (const [id, cliente] of Object.entries(clientes)) {
     if (`${cliente.nome}@gmail.com` === email) {
       return id;
@@ -40,13 +46,43 @@ async function obterIdClientePeloEmail(email) {
   return null;
 }
 
-async function carregarCliente(idCliente) {
+function calcularSaldoComPagamentos(valorInicial, dataInicial, pagamentos = [], dataFinal = null) {
+  const JUROS_DIA = 0.02;
+  let saldo = valorInicial;
+  let dataAnterior = new Date(dataInicial);
+  const hoje = new Date();
+  dataFinal = dataFinal ? new Date(dataFinal) : hoje;
+
+  const pagamentosOrdenados = pagamentos
+    .map(p => ({ ...p, data: new Date(p.data) }))
+    .sort((a, b) => a.data - b.data);
+
+  for (let pagamento of pagamentosOrdenados) {
+    const dias = Math.floor((pagamento.data - dataAnterior) / (1000 * 60 * 60 * 24));
+    if (dias > 0) {
+      const juros = saldo * JUROS_DIA * dias;
+      saldo += juros;
+    }
+    saldo -= pagamento.valor;
+    dataAnterior = pagamento.data;
+  }
+
+  const diasRestantes = Math.floor((dataFinal - dataAnterior) / (1000 * 60 * 60 * 24));
+  if (diasRestantes > 0 && saldo > 0) {
+    const juros = saldo * JUROS_DIA * diasRestantes;
+    saldo += juros;
+  }
+
+  return saldo;
+}
+
+async function carregarCliente() {
   const clienteSnap = await get(ref(db, `clientes/${idCliente}`));
   const cliente = clienteSnap.val();
   if (cliente) nomeCliente.textContent = cliente.nome;
 }
 
-async function carregarEmprestimos(idCliente) {
+async function carregarEmprestimos() {
   const emprestimosSnap = await get(ref(db, `clientes/${idCliente}/emprestimos`));
   const emprestimos = emprestimosSnap.val();
 
@@ -124,7 +160,7 @@ function criarMenuContextual() {
     });
 
     menuContextual.style.display = "none";
-    carregarEmprestimos(idCliente);
+    carregarEmprestimos();
   };
 
   const btnExcluir = document.createElement("button");
@@ -134,7 +170,7 @@ function criarMenuContextual() {
   btnExcluir.onclick = async () => {
     if (confirm("Tem certeza que deseja excluir este empréstimo?")) {
       await remove(ref(db, `clientes/${clienteSelecionadoId}/emprestimos/${emprestimoSelecionadoId}`));
-      carregarEmprestimos(idCliente);
+      carregarEmprestimos();
     }
     menuContextual.style.display = "none";
   };
@@ -157,6 +193,11 @@ document.addEventListener("click", () => {
 });
 
 criarMenuContextual();
+
+if (idCliente) {
+  carregarCliente();
+  carregarEmprestimos();
+}
 
 const linkParcelado = document.createElement("a");
 linkParcelado.href = `parcelado.html?id=${idCliente}`;
