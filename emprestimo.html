@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,16 +7,14 @@
   <link rel="stylesheet" href="style.css">
   <script type="module" src="emprestimo.js" defer></script>
 </head>
-
 <body class="pagina-emprestimo">
+  <div class=\"container\">
   <div class="container">
     <h1 id="tituloCliente">Empréstimos</h1>
     <label for="valor">Valor do empréstimo:</label>
     <input type="number" id="valor" placeholder="Valor" />
     <label for="data">Data do empréstimo:</label>
     <input type="date" id="data" />
-    <label for="vencimento">Data de Vencimento:</label>
-    <input type="date" id="vencimento" />
     <button id="btnRegistrar">Registrar Empréstimo</button>
     <h2>Empréstimos Anteriores</h2>
     <ul id="listaEmprestimos">
@@ -25,6 +22,6 @@
     </ul>
     <a href="index.html" class="botao-navegacao">← Voltar</a>
   </div>
+  </div>
 </body>
-
 </html>

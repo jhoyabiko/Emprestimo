@@ -68,7 +68,6 @@ async function carregarEmprestimos() {
     li.innerHTML = `<div class="card-cliente">
       Valor: R$ ${emp.valor} <br>
       Data: ${emp.data} <br>
-      ${emp.vencimento ? `Vencimento: ${emp.vencimento} <br>` : ''}
       Pagamentos: R$ ${pagamentos.reduce((t, p) => t + p.valor, 0)} <br>
       <strong>Saldo atual com juros: R$ ${saldo.toFixed(2)}</strong>
     </div>`;
@@ -120,12 +119,9 @@ function criarMenuContextual() {
     const novaData = prompt("Nova data do empréstimo:", emprestimoSelecionadoDados.data);
     if (!novaData) return;
 
-    const novoVencimento = prompt("Nova data de vencimento (opcional):", emprestimoSelecionadoDados.vencimento || "");
-
     await update(ref(db, `clientes/${clienteSelecionadoId}/emprestimos/${emprestimoSelecionadoId}`), {
       valor: valorNum,
-      data: novaData,
-      vencimento: novoVencimento || null
+      data: novaData
     });
 
     menuContextual.style.display = "none";
@@ -167,9 +163,9 @@ if (idCliente) {
   carregarCliente();
   carregarEmprestimos();
 }
-
 const linkParcelado = document.createElement("a");
 linkParcelado.href = `parcelado.html?id=${idCliente}`;
 linkParcelado.textContent = "Parcelado";
 linkParcelado.classList.add("botao-navegacao");
 document.querySelector(".botoes-navegacao").appendChild(linkParcelado);
+
