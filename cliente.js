@@ -1,11 +1,11 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, get, child, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getDatabase, ref, get, child, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
 const auth = getAuth(app);
+const db = getDatabase(app);
 
 const params = new URLSearchParams(location.search);
 let idCliente = params.get("id");
@@ -19,7 +19,7 @@ document.getElementById("linkPagamento").textContent = "Registrar Pagamento";
 
 onAuthStateChanged(auth, async (user) => {
   if (user) {
-    if (user.email !== 'jhoyabiko8@gmail.com') {
+    if (!idCliente || user.email !== 'jhoyabiko8@gmail.com') {
       idCliente = await obterIdClientePeloEmail(user.email);
     }
     if (idCliente) {
@@ -37,7 +37,6 @@ onAuthStateChanged(auth, async (user) => {
 async function obterIdClientePeloEmail(email) {
   const clientesSnap = await get(ref(db, 'clientes'));
   const clientes = clientesSnap.val();
-
   for (const [id, cliente] of Object.entries(clientes)) {
     if (`${cliente.nome}@gmail.com` === email) {
       return id;
@@ -53,9 +52,7 @@ function calcularSaldoComPagamentos(valorInicial, dataInicial, pagamentos = [], 
   const hoje = new Date();
   dataFinal = dataFinal ? new Date(dataFinal) : hoje;
 
-  const pagamentosOrdenados = pagamentos
-    .map(p => ({ ...p, data: new Date(p.data) }))
-    .sort((a, b) => a.data - b.data);
+  const pagamentosOrdenados = pagamentos.map(p => ({ ...p, data: new Date(p.data) })).sort((a, b) => a.data - b.data);
 
   for (let pagamento of pagamentosOrdenados) {
     const dias = Math.floor((pagamento.data - dataAnterior) / (1000 * 60 * 60 * 24));
