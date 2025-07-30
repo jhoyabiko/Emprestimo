@@ -17,65 +17,36 @@ document.getElementById("linkEmprestimo").textContent = "Novo Empréstimo";
 document.getElementById("linkPagamento").href = `pagamento.html?id=${idCliente}`;
 document.getElementById("linkPagamento").textContent = "Registrar Pagamento";
 
-function calcularSaldoComPagamentos(valorInicial, dataInicial, pagamentos = [], dataFinal = null) {
-  const JUROS_DIA = 0.02;
-  let saldo = valorInicial;
-  let dataAnterior = new Date(dataInicial);
-  const hoje = new Date();
-  dataFinal = dataFinal ? new Date(dataFinal) : hoje;
-
-  const pagamentosOrdenados = pagamentos
-    .map(p => ({ ...p, data: new Date(p.data) }))
-    .sort((a, b) => a.data - b.data);
-
-  for (let pagamento of pagamentosOrdenados) {
-    const dias = Math.floor((pagamento.data - dataAnterior) / (1000 * 60 * 60 * 24));
-    if (dias > 0) {
-      const juros = saldo * JUROS_DIA * dias;
-      saldo += juros;
-    }
-    saldo -= pagamento.valor;
-    dataAnterior = pagamento.data;
-  }
-
-  const diasRestantes = Math.floor((dataFinal - dataAnterior) / (1000 * 60 * 60 * 24));
-  if (diasRestantes > 0 && saldo > 0) {
-    const juros = saldo * JUROS_DIA * diasRestantes;
-    saldo += juros;
-  }
-
-  return saldo;
-}
-
-// Verificação de autenticação
 onAuthStateChanged(auth, async (user) => {
   if (user) {
     if (!idCliente || user.email !== 'jhoyabiko8@gmail.com') {
-      idCliente = await carregarIdCliente(user.email);
+      idCliente = await obterIdClientePeloEmail(user.email);
     }
-    carregarCliente();
-    carregarEmprestimos();
+    carregarCliente(idCliente);
+    carregarEmprestimos(idCliente);
   } else {
     window.location.href = "index.html";
   }
 });
 
-async function carregarIdCliente(email) {
-  const nome = email.split('@')[0]; // pressupõe que o email é do formato <nome>@gmail.com
-  const clienteSnap = await get(ref(db, `clientes`));
-  const clientes = clienteSnap.val();
-  
-  const cliente = Object.entries(clientes).find(([key, cli]) => cli.nome.toLowerCase() === nome.toLowerCase());
-  return cliente ? cliente[0] : null; // retorna o id do cliente
+async function obterIdClientePeloEmail(email) {
+  const clientesSnap = await get(ref(db, 'clientes'));
+  const clientes = clientesSnap.val();
+  for (const [id, cliente] of Object.entries(clientes)) {
+    if (`${cliente.nome}@gmail.com` === email) {
+      return id;
+    }
+  }
+  return null;
 }
 
-async function carregarCliente() {
+async function carregarCliente(idCliente) {
   const clienteSnap = await get(ref(db, `clientes/${idCliente}`));
   const cliente = clienteSnap.val();
   if (cliente) nomeCliente.textContent = cliente.nome;
 }
 
-async function carregarEmprestimos() {
+async function carregarEmprestimos(idCliente) {
   const emprestimosSnap = await get(ref(db, `clientes/${idCliente}/emprestimos`));
   const emprestimos = emprestimosSnap.val();
 
@@ -153,7 +124,7 @@ function criarMenuContextual() {
     });
 
     menuContextual.style.display = "none";
-    carregarEmprestimos();
+    carregarEmprestimos(idCliente);
   };
 
   const btnExcluir = document.createElement("button");
@@ -163,7 +134,7 @@ function criarMenuContextual() {
   btnExcluir.onclick = async () => {
     if (confirm("Tem certeza que deseja excluir este empréstimo?")) {
       await remove(ref(db, `clientes/${clienteSelecionadoId}/emprestimos/${emprestimoSelecionadoId}`));
-      carregarEmprestimos();
+      carregarEmprestimos(idCliente);
     }
     menuContextual.style.display = "none";
   };
