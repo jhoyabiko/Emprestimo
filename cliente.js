@@ -1,14 +1,12 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, get, child, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import { firebaseConfig } from './firebase-config.js';
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
-const auth = getAuth(app);
 
 const params = new URLSearchParams(location.search);
-let idCliente = params.get("id");
+const idCliente = params.get("id");
 const nomeCliente = document.getElementById("nomeCliente");
 const listaEmprestimos = document.getElementById("listaEmprestimos");
 
@@ -17,35 +15,6 @@ document.getElementById("linkEmprestimo").textContent = "Novo Empréstimo";
 document.getElementById("linkPagamento").href = `pagamento.html?id=${idCliente}`;
 document.getElementById("linkPagamento").textContent = "Registrar Pagamento";
 
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    // Verificar se o ID do cliente está correto
-    if (!idCliente || user.email !== 'jhoyabiko8@gmail.com') {
-      idCliente = await obterIdClientePeloEmail(user.email);
-    }
-    if (idCliente) {
-      carregarCliente();
-      carregarEmprestimos();
-    } else {
-      alert("Cliente não encontrado.");
-      window.location.href = "index.html";
-    }
-  } else {
-    window.location.href = "index.html";
-  }
-});
-
-async function obterIdClientePeloEmail(email) {
-  const clientesSnap = await get(ref(db, 'clientes'));
-  const clientes = clientesSnap.val();
-  for (const [id, cliente] of Object.entries(clientes)) {
-    if (`${cliente.nome}@gmail.com` === email) {
-      return id;
-    }
-  }
-  return null;
-}
-
 function calcularSaldoComPagamentos(valorInicial, dataInicial, pagamentos = [], dataFinal = null) {
   const JUROS_DIA = 0.02;
   let saldo = valorInicial;
@@ -53,7 +22,9 @@ function calcularSaldoComPagamentos(valorInicial, dataInicial, pagamentos = [], 
   const hoje = new Date();
   dataFinal = dataFinal ? new Date(dataFinal) : hoje;
 
-  const pagamentosOrdenados = pagamentos.map(p => ({ ...p, data: new Date(p.data) })).sort((a, b) => a.data - b.data);
+  const pagamentosOrdenados = pagamentos
+    .map(p => ({ ...p, data: new Date(p.data) }))
+    .sort((a, b) => a.data - b.data);
 
   for (let pagamento of pagamentosOrdenados) {
     const dias = Math.floor((pagamento.data - dataAnterior) / (1000 * 60 * 60 * 24));
@@ -138,7 +109,7 @@ function criarMenuContextual() {
   menuContextual.style.display = "none";
 
   const btnEditar = document.createElement("button");
-  btnEditar.textContent = "Editar";
+  btnEditar.textContent = "✏️ Editar";
   btnEditar.style.display = "block";
   btnEditar.onclick = async () => {
     const novoValor = prompt("Novo valor do empréstimo:", emprestimoSelecionadoDados.valor);
@@ -162,7 +133,7 @@ function criarMenuContextual() {
   };
 
   const btnExcluir = document.createElement("button");
-  btnExcluir.textContent = "Excluir";
+  btnExcluir.textContent = "🗑️ Excluir";
   btnExcluir.style.display = "block";
   btnExcluir.style.marginTop = "6px";
   btnExcluir.onclick = async () => {
