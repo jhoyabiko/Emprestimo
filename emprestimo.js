@@ -1,4 +1,3 @@
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getDatabase, ref, push, get, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { firebaseConfig } from './firebase-config.js';
@@ -16,15 +15,18 @@ const titulo = document.getElementById("tituloCliente");
 btnRegistrar.addEventListener("click", () => {
   const valor = parseFloat(document.getElementById("valor").value);
   const data = document.getElementById("data").value;
+  const vencimento = document.getElementById("vencimento").value || null;
 
   if (valor > 0 && data) {
     push(ref(db, `clientes/${idCliente}/emprestimos`), {
       valor,
-      data
+      data,
+      vencimento
     }).then(() => {
       alert("Empréstimo registrado!");
       document.getElementById("valor").value = "";
       document.getElementById("data").value = "";
+      document.getElementById("vencimento").value = "";
       carregarEmprestimos();
     }).catch(err => console.error("Erro ao registrar:", err));
   } else {
@@ -47,7 +49,8 @@ async function carregarEmprestimos() {
 
   Object.entries(emprestimos).forEach(([key, emp]) => {
     const li = document.createElement("li");
-    li.textContent = `R$ ${emp.valor.toFixed(2)} - ${emp.data}`;
+    li.textContent = `R$ ${emp.valor.toFixed(2)} - ${emp.data}` +
+      (emp.vencimento ? ` (vencimento: ${emp.vencimento})` : '');
 
     // Clique direito para editar
     li.addEventListener("contextmenu", (e) => {
@@ -79,9 +82,13 @@ function editarEmprestimo(chave, dados) {
   const novaData = prompt("Nova data do empréstimo:", dados.data);
   if (!novaData) return;
 
+  const novoVencimento = prompt("Nova data de vencimento (deixe em branco para nenhum):", dados.vencimento || "");
+  const vencimentoFormatado = novoVencimento.trim() === "" ? null : novoVencimento;
+
   update(ref(db, `clientes/${idCliente}/emprestimos/${chave}`), {
     valor: valorNum,
-    data: novaData
+    data: novaData,
+    vencimento: vencimentoFormatado
   }).then(() => {
     alert("Empréstimo atualizado!");
     carregarEmprestimos();
