@@ -273,29 +273,40 @@ function reiniciarTemporizador() {
   temporizador = setTimeout(logoutAutomatico, tempoRestante * 1000);
 }
 
-// === LOGOUT AUTOMÁTICO POR INATIVIDADE ===
-let tempoInatividade; // variável para guardar o timer
+// === LOGOUT AUTOMÁTICO POR INATIVIDADE (CORRIGIDO PARA MOBILE) ===
+let tempoInatividade;
 
 // Função para resetar o contador de inatividade
 function resetarInatividade() {
   clearTimeout(tempoInatividade);
-  // 5 minutos = 100.000 ms (você pode ajustar esse valor)
+  // 5 minutos = 300000 ms
   tempoInatividade = setTimeout(() => {
     alert("Você foi desconectado por inatividade.");
     signOut(auth);
   }, 300000);
 }
 
-// Eventos que reiniciam o contador de inatividade
-["click", "mousemove", "keypress", "touchstart"].forEach(evento => {
-  document.addEventListener(evento, resetarInatividade);
+// Lista de eventos que devem resetar o contador
+const eventos = ["click", "mousemove", "keypress", "scroll"];
+
+// Em dispositivos mobile, 'touchstart' pode causar conflito no login,
+// então adicionamos ele com passive:true e verificamos login ativo
+eventos.forEach(evento => {
+  document.addEventListener(evento, () => {
+    if (auth.currentUser) resetarInatividade();
+  });
 });
 
-// Inicia o contador assim que o usuário faz login
+// Adiciona toque no mobile de forma segura
+document.addEventListener("touchend", () => {
+  if (auth.currentUser) resetarInatividade();
+}, { passive: true });
+
+// Inicia o contador apenas após o login
 onAuthStateChanged(auth, user => {
   if (user) {
-    resetarInatividade(); // começa o contador
+    resetarInatividade();
   } else {
-    clearTimeout(tempoInatividade); // cancela se estiver deslogado
+    clearTimeout(tempoInatividade);
   }
 });
