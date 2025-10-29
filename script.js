@@ -273,18 +273,4 @@ function reiniciarTemporizador() {
   temporizador = setTimeout(logoutAutomatico, tempoRestante * 1000);
 }
 
-// Detectar atividade do usuário (qualquer clique, tecla pressionada ou movimento do mouse)
-document.addEventListener("click", reiniciarTemporizador);
-document.addEventListener("keydown", reiniciarTemporizador);
-document.addEventListener("mousemove", reiniciarTemporizador);
-document.addEventListener("touchstart", reiniciarTemporizador); // Para dispositivos móveis
-document.addEventListener("scroll", reiniciarTemporizador); //Para detectar scroll
 
-// Iniciar o temporizador na primeira carga da página
-// Mas espere que o onAuthStateChanged defina se o usuario está logado
-auth.onAuthStateChanged(user => {
-  if (user) {
-    reiniciarTemporizador();
-  }
-});
-// ========= FIM DO CÓDIGO DE LOGOUT AUTOMÁTICO =========
