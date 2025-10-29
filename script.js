@@ -249,3 +249,42 @@ function calcularSaldoEJuros(valorInicial, dataInicial, pagamentos = [], dataFin
 
   return { saldo, jurosTotais };
 }
+// ========= INÍCIO DO CÓDIGO DE LOGOUT AUTOMÁTICO =========
+let tempoInatividade = 1800; // 30 minutos em segundos
+let tempoRestante = tempoInatividade;
+let temporizador;
+
+function logoutAutomatico() {
+  signOut(auth).then(() => {
+    // Logout bem-sucedido. Redirecione para a página de login
+    window.location.href = "index.html"; // Ou sua página de login
+  }).catch((error) => {
+    // Ocorreu um erro no logout.
+    console.error("Erro ao fazer logout:", error);
+    alert("Erro ao fazer logout automático."); // Informar o usuário
+  });
+}
+
+function reiniciarTemporizador() {
+  tempoRestante = tempoInatividade;
+  if (temporizador) {
+    clearTimeout(temporizador);
+  }
+  temporizador = setTimeout(logoutAutomatico, tempoRestante * 1000);
+}
+
+// Detectar atividade do usuário (qualquer clique, tecla pressionada ou movimento do mouse)
+document.addEventListener("click", reiniciarTemporizador);
+document.addEventListener("keydown", reiniciarTemporizador);
+document.addEventListener("mousemove", reiniciarTemporizador);
+document.addEventListener("touchstart", reiniciarTemporizador); // Para dispositivos móveis
+document.addEventListener("scroll", reiniciarTemporizador); //Para detectar scroll
+
+// Iniciar o temporizador na primeira carga da página
+// Mas espere que o onAuthStateChanged defina se o usuario está logado
+auth.onAuthStateChanged(user => {
+  if (user) {
+    reiniciarTemporizador();
+  }
+});
+// ========= FIM DO CÓDIGO DE LOGOUT AUTOMÁTICO =========
