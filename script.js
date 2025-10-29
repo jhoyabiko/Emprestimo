@@ -273,4 +273,29 @@ function reiniciarTemporizador() {
   temporizador = setTimeout(logoutAutomatico, tempoRestante * 1000);
 }
 
+// === LOGOUT AUTOMÁTICO POR INATIVIDADE ===
+let tempoInatividade; // variável para guardar o timer
 
+// Função para resetar o contador de inatividade
+function resetarInatividade() {
+  clearTimeout(tempoInatividade);
+  // 5 minutos = 100.000 ms (você pode ajustar esse valor)
+  tempoInatividade = setTimeout(() => {
+    alert("Você foi desconectado por inatividade.");
+    signOut(auth);
+  }, 300000);
+}
+
+// Eventos que reiniciam o contador de inatividade
+["click", "mousemove", "keypress", "touchstart"].forEach(evento => {
+  document.addEventListener(evento, resetarInatividade);
+});
+
+// Inicia o contador assim que o usuário faz login
+onAuthStateChanged(auth, user => {
+  if (user) {
+    resetarInatividade(); // começa o contador
+  } else {
+    clearTimeout(tempoInatividade); // cancela se estiver deslogado
+  }
+});
